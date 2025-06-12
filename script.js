@@ -372,8 +372,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function exportToPDF() {
+        // Initialize jsPDF in landscape mode
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        const doc = new jsPDF('landscape'); // Set orientation to landscape
 
         const year = currentDate.getFullYear();
         doc.setFontSize(20);
@@ -398,21 +399,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 return hourA.localeCompare(hourB);
             });
 
-            const tableColumnTitles = ["Data", "Horário", "Tipo de Evento", "Detalhes", "Descrição", "Participantes"];
+            const tableColumnTitles = ["Data", "Horário", "Tipo de Evento", "Cidade", "Detalhes", "Descrição", "Participantes"];
             const tableBody = events.map(event => {
                 const datePart = event.id.split('-').slice(0, 3).join('-');
                 const [y, m, d] = datePart.split('-');
                 const formattedDate = `${d}/${m}/${y}`;
 
                 let eventDetails = '';
+                let city = event.city || ''; // Get city for the dedicated column
+
                 if (event.eventType === 'Reunião' && event.reuniaoTypes && event.reuniaoTypes.length > 0) {
                     eventDetails = `Tipos: ${event.reuniaoTypes.join(', ')}`;
                 } else if (event.eventType === 'Batismo' || event.eventType === 'Reunião para Mocidade') {
-                    eventDetails = `Ancião: ${event.ancientsName || 'N/A'}\nCidade: ${event.city || 'N/A'}`;
+                    eventDetails = `Ancião: ${event.ancientsName || 'N/A'}`;
                 } else if (event.eventType === 'Ensaio Regional') {
-                    eventDetails = `Ancião: ${event.ancientsName || 'N/A'}\nEncarregado Regional: ${event.regionalManager || 'N/A'}\nCidade: ${event.city || 'N/A'}`;
+                    eventDetails = `Ancião: ${event.ancientsName || 'N/A'}\nEncarregado Regional: ${event.regionalManager || 'N/A'}`;
                 } else if (event.eventType === 'Ensaio Local') {
-                    eventDetails = `Encarregado Local: ${event.localManager || 'N/A'}\nCidade: ${event.city || 'N/A'}`;
+                    eventDetails = `Encarregado Local: ${event.localManager || 'N/A'}`;
                 } else if (event.title) {
                     eventDetails = `Título: ${event.title}`;
                 } else {
@@ -426,6 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     formattedDate,
                     event.hour || "—",
                     event.eventType,
+                    city, // Dedicated city column
                     eventDetails,
                     event.description || "Sem descrição",
                     participants
@@ -436,13 +440,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 head: [tableColumnTitles],
                 body: tableBody,
                 startY: 30,
-                // Add column styling to ensure text wraps for 'Detalhes'
+                // Adjust column styles for better fit in landscape
                 columnStyles: {
-                    3: { cellWidth: 'auto', minCellHeight: 15 } // 'Detalhes' column
+                    // Adjust column widths as needed for landscape
+                    0: { cellWidth: 25 }, // Data
+                    1: { cellWidth: 20 }, // Horário
+                    2: { cellWidth: 40 }, // Tipo de Evento
+                    3: { cellWidth: 30 }, // Cidade
+                    4: { cellWidth: 50 }, // Detalhes (multiline)
+                    5: { cellWidth: 'auto', minCellHeight: 15 }, // Descrição (auto width, min height for multiline)
+                    6: { cellWidth: 'auto', minCellHeight: 15 }  // Participantes (auto width, min height for multiline)
                 },
                 didParseCell: function(data) {
                     // This callback helps format cell content before rendering
-                    if (data.column.index === 3 && data.cell.raw) { // For 'Detalhes' column
+                    if (data.column.index === 4 && data.cell.raw) { // For 'Detalhes' column
                         data.cell.text = String(data.cell.raw).split('\n'); // Split by newline for multiline content
                     }
                 }
