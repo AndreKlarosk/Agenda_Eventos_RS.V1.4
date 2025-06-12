@@ -21,7 +21,8 @@
             <div>Sáb</div>
         </div>
         <div id="calendar-days"></div>
-        <button id="export-pdf-btn">Exportar Ano como PDF</button> </div>
+        <button id="export-pdf-btn">Exportar Ano como PDF</button>
+    </div>
 
     <div id="event-modal" class="modal">
         <div class="modal-content">
@@ -41,7 +42,8 @@
                 </select>
             </div>
 
-            <input type="text" id="event-title-input" placeholder="Título do Evento (Opcional)" style="display:none;"> <input type="time" id="event-hour-input" placeholder="Hora do Evento" required>
+            <input type="text" id="event-title-input" placeholder="Título do Evento (Opcional)" style="display:none;">
+            <input type="time" id="event-hour-input" placeholder="Hora do Evento" required>
             <textarea id="event-desc-input" placeholder="Descrição do Evento"></textarea>
 
             <div id="reuniao-options" class="conditional-inputs" style="display:none;">
@@ -106,7 +108,9 @@
                 <label for="musicos">Músicos</label><br>
                 <input type="checkbox" id="organistas" name="event-participant" value="Organistas">
                 <label for="organistas">Organistas</label><br>
-            </div>
+
+                <input type="checkbox" id="geral" name="event-participant" value="Geral">
+                <label for="geral">Geral</label><br> </div>
             <button id="save-event-btn">Salvar</button>
             <button id="delete-event-btn" class="delete-btn">Excluir</button>
         </div>
